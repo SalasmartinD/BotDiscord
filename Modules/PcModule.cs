@@ -12,18 +12,19 @@ namespace DiscordBot.Modules
         private readonly PcController _pcController = new PcController();
         // COMANDO: PRENDER
         [Command("pcon")]
-        [Summary("Prende la PC Gamer mediante Wake on LAN.")]
+        [Summary("Prende la PC mediante Wake on LAN.")]
         [RequireRole("Admin-MC")] 
 
         public async Task Encender()
         {
-            await ReplyAsync("⚡ Enviando señal mágica a la PC...");
+            await ReplyAsync("💀 Reviviendo la PC");
+            await ReplyAsync("Espera 1 o 2 minutos para prender el server gordito");
             await _pcController.EncenderPc();
         }
 
         // COMANDO: APAGAR
         [Command("pcoff")]
-        [Summary("Apaga la PC Gamer mediante SSH.")]
+        [Summary("Apaga la PC.")]
         [RequireRole("Admin-MC")] // Solo gente con este rol puede apagarla
         public async Task Apagar()
         {
@@ -53,6 +54,7 @@ namespace DiscordBot.Modules
 
                 case "server":
                     ruta = "RunServer"; 
+                    await ReplyAsync("En aproximadamente 2 o 3 minutos vas a poder entrar a viciar gordito");
                     break;
                 
                 case "ip":
@@ -60,7 +62,7 @@ namespace DiscordBot.Modules
                     break;
                 
                 default:
-                    await ReplyAsync("🤷‍♂️ No conozco ese programa. Prueba con '!ejecutar server'");
+                    await ReplyAsync("No se que decis tontito. Intenta con '!ejecutar server' o '!ejecutar ip'");
                     return;
             }
 
@@ -69,7 +71,7 @@ namespace DiscordBot.Modules
         }
 
         [Command("estado")]
-        [Summary("Verifica estado. Uso: !estado pc | !estado server | !estado playit")]
+        [Summary("Verifica estado. Uso: !estado pc | !estado server | !estado ip")]
         public async Task Estado([Remainder] string objetivo = "pc")
         {
             bool estaOn = false;
@@ -90,7 +92,7 @@ namespace DiscordBot.Modules
                     else await ReplyAsync("❌ **Minecraft Server: APAGADO**");
                     break;
 
-                case "playit":
+                case "ip":
                     string nombreExe = "playit.exe"; 
                     
                     estaOn = _pcController.EstaProcesoCorriendo(nombreExe);
@@ -100,8 +102,54 @@ namespace DiscordBot.Modules
                     break;
 
                 default:
-                    await ReplyAsync("❓ Opción no válida. Usa: pc, server, o playit.");
+                    await ReplyAsync("❓ No se q decis bobi, proba con: pc, server, o playit.");
                     break;
+            }
+        }
+
+        [Command("kill")]
+        [Summary("Cierra programas a la fuerza. Uso: !kill server | !kill ip")]
+        [RequireRole("Admin-MC")] // ¡Importante para que nadie te apague cosas por error!
+        public async Task Kill([Remainder] string objetivo)
+        {
+            string nombreProceso = "";
+            string nombreAmigable = "";
+
+            switch (objetivo.ToLower())
+            {
+                case "server":
+                case "minecraft": // Alias extra
+                    nombreProceso = "java.exe"; 
+                    nombreAmigable = "⛏️ Servidor de Minecraft";
+                    break;
+
+                case "ip":
+                case "playitgg": // Alias extra
+                    // ⚠️ ASEGURATE que en tu Administrador de Tareas se llame así.
+                    // A veces es "playit-amd64.exe" o similar.
+                    nombreProceso = "playit.exe"; 
+                    nombreAmigable = "🌐 Túnel Playit.gg";
+                    break;
+
+                default:
+                    await ReplyAsync("⚠️ Objetivo no reconocido. Intenta: `!kill server` o `!kill ip`");
+                    return;
+            }
+
+            await ReplyAsync($"🔫 Apuntando a: **{nombreAmigable}** ({nombreProceso})...");
+
+            try 
+            {
+                // Llamamos a tu función genérica que ya creaste antes
+                _pcController.MatarProceso(nombreProceso);
+                
+                // Esperamos un segundo y confirmamos (Opcional)
+                await Task.Delay(1000); 
+                await ReplyAsync($"💀 **{nombreAmigable}** fue sido eliminado.");
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync($"❌ Error al intentar matar el proceso: {ex.Message}");
             }
         }
     }

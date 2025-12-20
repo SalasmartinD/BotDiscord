@@ -20,7 +20,7 @@ public class HelpModule : ModuleBase<SocketCommandContext>
         var builder = new EmbedBuilder()
         {
             Title = "📜 Panel de Ayuda",
-            Description = "Aquí tienes la lista de comandos disponibles:",
+            Description = "Si queres prender el server, siempre primero verifica si ya estan los procesos y la PC prendida con (>estado pc/server/ip)\nEstos son los comandos disponibles:",
             Color = Color.Blue
         };
 

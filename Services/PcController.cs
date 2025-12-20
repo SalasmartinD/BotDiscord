@@ -22,20 +22,19 @@ namespace DiscordBot.Services
         // ==========================================
         public PcController()
         {
-            // 1. Leemos el archivo JSON
+            // 1. Leo el archivo JSON
             string textoJson = File.ReadAllText("appsettings.json");
             
-            // 2. Lo convertimos a objeto
+            // 2. Lo convierto a objeto
             var config = JsonSerializer.Deserialize<BotConfig>(textoJson);
 
-            // 🔴 VALIDACIÓN DE SEGURIDAD (Esto es lo que arregla el error)
-            // Le decimos: "Si config es nulo O la parte de PcConfig es nula, lanza error"
+            // "Si config es nulo O la parte de PcConfig es nula, lanza error"
             if (config == null || config.PcConfig == null)
             {
                 throw new Exception("ERROR CRÍTICO: El archivo appsettings.json está vacío, mal formado o le falta la sección PcConfig.");
             }
 
-            // 3. Cargamos las variables (Ahora usamos el operador '??' por si acaso vienen vacías poner un texto vacío)
+            // 3. Cargo las variables
             PcIp = config.PcConfig.Ip ?? "";
             PcMac = config.PcConfig.Mac ?? "";
             SshUser = config.PcConfig.User ?? "";
@@ -99,7 +98,7 @@ namespace DiscordBot.Services
             Ping ping = new Ping();
             try
             {
-                // Enviamos un ping y esperamos máximo 2 segundos
+                // Envio un ping y espero máximo 2 segundos
                 PingReply reply = await ping.SendPingAsync(PcIp, 2000);
                 return reply.Status == IPStatus.Success;
             }
@@ -126,13 +125,35 @@ namespace DiscordBot.Services
                     client.Disconnect();
 
                     // Si el resultado contiene el nombre, es que está vivo
-                    // Usamos .ToLower() para evitar problemas de mayúsculas
+                    // Uso .ToLower() para evitar problemas de mayúsculas
                     return resultado.ToLower().Contains(nombreProceso.ToLower());
                 }
             }
+
             catch
             {
                 return false;
+            }   
+        }
+
+        // MÉTODO: MATAR PROCESO (Kill Switch)
+        public void MatarProceso(string nombreProceso)
+        {
+            // Conectamos por SSH
+            using (var client = new SshClient(PcIp, SshUser, SshPass))
+            {
+                client.Connect();
+
+                // Ejecutamos el comando de Windows: taskkill
+                // /F  -> Force (Fuerza bruta, no pide permiso para cerrar)
+                // /IM -> Image Name (Nombre del archivo, ej: java.exe)
+                // /T  -> Tree (Mata también a los sub-procesos hijos, por si acaso)
+                var cmd = client.CreateCommand($"taskkill /F /IM {nombreProceso} /T");
+                
+                // Ejecutamos la orden
+                cmd.Execute();
+                
+                client.Disconnect();
             }
         }
     }

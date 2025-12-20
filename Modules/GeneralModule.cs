@@ -5,16 +5,16 @@ using Discord.Commands;
 public class GeneralModule : ModuleBase<SocketCommandContext>
 {
     [Command("hola")]
-    [Summary("Saluda al usuario.")]
+    [Summary("Te saludo")]
     public async Task Hola()
     {
         // "Context.User" es quien envió el mensaje automáticamente
-        await ReplyAsync($"¡Hola {Context.User.Mention}!");
+        await ReplyAsync($"Hola gordito");
     }
 
     [Command("info")]
     public async Task Info()
     {
-        await ReplyAsync("Soy un bot modular hecho en C# 🤖");
+        await ReplyAsync("Soy un bot modular hecho en C# 🤖, pero tambien me podes decir mi amor");
     }
 }
