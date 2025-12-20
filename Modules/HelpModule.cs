@@ -27,7 +27,7 @@ public class HelpModule : ModuleBase<SocketCommandContext>
         // Recorremos todos los Módulos (Archivos de comandos)
         foreach (var module in _service.Modules)
         {
-            string description = null;
+            string? description = null;
 
             // Recorremos todos los comandos dentro de ese módulo
             foreach (var cmd in module.Commands)

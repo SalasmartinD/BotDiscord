@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.IO; // Necesario para File.ReadAllText
+using Renci.SshNet;
 
 public class Program
 {
@@ -20,7 +21,7 @@ public class Program
         // ---------------------------------------------------------
         // 1. CARGA DE CONFIGURACIÓN (Token)
         // ---------------------------------------------------------
-        // Primero verificamos si existe el archivo para evitar crashes feos
+        // Primero verifico si existe el archivo para evitar crashes feos
         if (!File.Exists("appsettings.json"))
         {
             Console.WriteLine("ERROR FATAL: No se encontró el archivo 'appsettings.json'.");
@@ -31,7 +32,7 @@ public class Program
         string textoJson = File.ReadAllText("appsettings.json");
         var config = JsonSerializer.Deserialize<Config>(textoJson);
 
-        // Verificamos que el token no haya venido vacío
+        // Verifico que el token no haya venido vacío
         if (string.IsNullOrEmpty(config?.Token))
         {
             Console.WriteLine("ERROR: El archivo json existe, pero el Token está vacío o mal escrito.");
