@@ -144,13 +144,13 @@ namespace DiscordBot.Services
             {
                 client.Connect();
 
-                // Ejecutamos el comando de Windows: taskkill
+                // Ejecuto el comando de Windows: taskkill
                 // /F  -> Force (Fuerza bruta, no pide permiso para cerrar)
                 // /IM -> Image Name (Nombre del archivo, ej: java.exe)
                 // /T  -> Tree (Mata también a los sub-procesos hijos, por si acaso)
                 var cmd = client.CreateCommand($"taskkill /F /IM {nombreProceso} /T");
                 
-                // Ejecutamos la orden
+                // Ejecuto la orden
                 cmd.Execute();
                 
                 client.Disconnect();

@@ -2,6 +2,7 @@ using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
 using DiscordBot.Services;
+using System.Text.Json;
 
 namespace DiscordBot.Modules
 {
@@ -109,7 +110,7 @@ namespace DiscordBot.Modules
 
         [Command("kill")]
         [Summary("Cierra programas a la fuerza. Uso: !kill server | !kill ip")]
-        [RequireRole("Admin-MC")] // ¡Importante para que nadie te apague cosas por error!
+        [RequireRole("Admin-MC")] // ¡Importante para que nadie apague cosas por error!
         public async Task Kill([Remainder] string objetivo)
         {
             string nombreProceso = "";
@@ -125,8 +126,6 @@ namespace DiscordBot.Modules
 
                 case "ip":
                 case "playitgg": // Alias extra
-                    // ⚠️ ASEGURATE que en tu Administrador de Tareas se llame así.
-                    // A veces es "playit-amd64.exe" o similar.
                     nombreProceso = "playit.exe"; 
                     nombreAmigable = "🌐 Túnel Playit.gg";
                     break;
@@ -140,16 +139,73 @@ namespace DiscordBot.Modules
 
             try 
             {
-                // Llamamos a tu función genérica que ya creaste antes
                 _pcController.MatarProceso(nombreProceso);
                 
-                // Esperamos un segundo y confirmamos (Opcional)
+                // Espero un segundo y confirmo (Opcional)
                 await Task.Delay(1000); 
                 await ReplyAsync($"💀 **{nombreAmigable}** fue sido eliminado.");
             }
             catch (Exception ex)
             {
                 await ReplyAsync($"❌ Error al intentar matar el proceso: {ex.Message}");
+            }
+        }
+
+        [Command("modelos")]
+        [RequireRole("Admin")]
+        [Summary("Lista los modelos de IA disponibles para tu API Key.")]
+        public async Task ListarModelos()
+        {
+            // 1. Recupero la API Key de la configuración
+            string json = File.ReadAllText("appsettings.json");
+            using var docConfig = JsonDocument.Parse(json);
+            string? apiKey = docConfig.RootElement.GetProperty("GoogleApiKey").GetString();
+
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models?key={apiKey}";
+
+            using var client = new HttpClient();
+            
+            try 
+            {
+                var response = await client.GetAsync(url);
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ReplyAsync($"❌ **Error al consultar:** {response.StatusCode}\n```{responseString}```");
+                    return;
+                }
+
+                // Parseo para sacar los nombres
+                using var doc = JsonDocument.Parse(responseString);
+                var modelos = doc.RootElement.GetProperty("models");
+                
+                var lista = "🧠 **Modelos Disponibles:**\n";
+                foreach (var modelo in modelos.EnumerateArray())
+                {
+                    // Filtro solo los que sirven para generar contenido
+                    var metodos = modelo.GetProperty("supportedGenerationMethods");
+                    bool generaContenido = false;
+                    foreach(var m in metodos.EnumerateArray())
+                    {
+                        if (m.GetString() == "generateContent") generaContenido = true;
+                    }
+
+                    if (generaContenido)
+                    {
+                        var nombre = modelo.GetProperty("name").GetString(); // ej: models/gemini-pro
+                        lista += $"- `{nombre}`\n";
+                    }
+                }
+
+                // Corto si es muy largo
+                if (lista.Length > 1900) lista = lista.Substring(0, 1900);
+                
+                await ReplyAsync(lista);
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync($"💥 Explotó: {ex.Message}");
             }
         }
     }

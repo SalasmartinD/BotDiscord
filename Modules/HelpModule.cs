@@ -6,7 +6,7 @@ public class HelpModule : ModuleBase<SocketCommandContext>
 {
     private readonly CommandService _service;
 
-    // Inyección de dependencias: El sistema nos da el servicio de comandos automáticamente
+    // Inyección de dependencias: El sistema da el servicio de comandos automáticamente
     public HelpModule(CommandService service)
     {
         _service = service;
@@ -24,18 +24,18 @@ public class HelpModule : ModuleBase<SocketCommandContext>
             Color = Color.Blue
         };
 
-        // Recorremos todos los Módulos (Archivos de comandos)
+        // Recorro todos los Módulos (Archivos de comandos)
         foreach (var module in _service.Modules)
         {
             string? description = null;
 
-            // Recorremos todos los comandos dentro de ese módulo
+            // Recorro todos los comandos dentro de ese módulo
             foreach (var cmd in module.Commands)
             {
-                // Ignoramos el comando help para que no sea redundante (opcional)
+                // Ignoro el comando help para que no sea redundante (opcional)
                 var result = await cmd.CheckPreconditionsAsync(Context);
                 
-                // Si el usuario tiene permisos para usarlo, lo mostramos
+                // Si el usuario tiene permisos para usarlo, lo muestro
                 if (result.IsSuccess) 
                 {
                     // Formato: >comando - Descripción
@@ -43,10 +43,10 @@ public class HelpModule : ModuleBase<SocketCommandContext>
                 }
             }
 
-            // Si el módulo tiene comandos disponibles, lo agregamos al Embed
+            // Si el módulo tiene comandos disponibles, lo agrego al Embed
             if (!string.IsNullOrWhiteSpace(description))
             {
-                // Usamos el nombre del módulo (o el nombre de la clase si no tiene nombre)
+                // Uso el nombre del módulo (o el nombre de la clase si no tiene nombre)
                 builder.AddField(x =>
                 {
                     x.Name = module.Name ?? "Otros";
