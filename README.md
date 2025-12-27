@@ -1,6 +1,6 @@
 # 🤖 AstolfoBot - AI Powered Discord Assistant
 
-**AstolfoBot** es un bot de Discord desarrollado en **C# (.NET 8)** que integra Inteligencia Artificial Generativa (Google Gemini/Gemma) para ofrecer conversaciones naturales, contextuales y divertidas. 
+**AstolfoBot** es un bot de Discord desarrollado en **C# (.NET 10)** que integra Inteligencia Artificial Generativa (Google Gemini/Gemma) para ofrecer conversaciones naturales, contextuales y divertidas. 
 
 A diferencia de los bots tradicionales basados en comandos rígidos, este proyecto implementa un "cerebro" capaz de recordar el contexto de la conversación, adoptar una personalidad específica y (próximamente) ejecutar tareas de administración de sistemas mediante lenguaje natural.
 
@@ -23,7 +23,7 @@ A diferencia de los bots tradicionales basados en comandos rígidos, este proyec
 ## 🛠️ Tecnologías Usadas
 
 - **Lenguaje:** C# (C Sharp)
-- **Framework:** .NET 8.0
+- **Framework:** .NET 10.0
 - **Librerías:** - `Discord.Net` (Interacción con la API de Discord)
   - `System.Diagnostics.Process` (Control del Sistema Operativo)
   - `HttpClient` (Consumo de API REST de Google)
@@ -31,7 +31,7 @@ A diferencia de los bots tradicionales basados en comandos rígidos, este proyec
 ## 📋 Requisitos Previos
 
 Para ejecutar este bot necesitas:
-1.  **.NET 8 SDK** instalado.
+1.  **.NET 10 SDK** instalado.
 2.  Una cuenta de desarrollador en [Discord Developer Portal](https://discord.com/developers/applications) para obtener el Token.
 3.  Una API Key de [Google AI Studio](https://aistudio.google.com/) (Gratuita).
 
@@ -39,7 +39,7 @@ Para ejecutar este bot necesitas:
 
 1.  Clona el repositorio:
     ```bash
-    git clone [https://github.com/TU_USUARIO/AstolfoBot.git](https://github.com/TU_USUARIO/AstolfoBot.git)
+    git clone https://github.com/SalasmartinD/BotDiscord.git
     ```
 2.  Crea un archivo `appsettings.json` en la raíz del proyecto (o usa User Secrets) con la siguiente estructura:
     ```json
